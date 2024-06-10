@@ -1,32 +1,29 @@
-// screens/RegisterScreen.tsx
+// screens/LoginScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert, Image } from 'react-native';
 
-const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [name, setName] = useState('');
+const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
 
-  const register = async () => {
+  const login = async () => {
     try {
       const response = await fetch('https://endpoint', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password, dateOfBirth }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        console.log('Registro bem-sucedido:', data);
-        Alert.alert('Registro bem-sucedido', `Bem-vindo, ${data.user.name}`);
-        navigation.navigate('Login');
+        console.log('Login bem-sucedido:', data);
+        Alert.alert('Login bem-sucedido', `Bem-vindo, ${data.user.name}`);
       } else {
-        console.error('Erro no registro:', data);
-        Alert.alert('Erro no registro', data.message || 'Algo deu errado, tente novamente.');
+        console.error('Erro no login:', data);
+        Alert.alert('Erro no login', data.message || 'Algo deu errado, tente novamente.');
       }
     } catch (error) {
       console.error('Erro de rede:', error);
@@ -37,13 +34,7 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <Text style={styles.title}>Sign up</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={name}
-          onChangeText={setName}
-        />
+        <Text style={styles.title}>Sign in</Text>
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -59,20 +50,14 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           secureTextEntry
           onChangeText={setPassword}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Date of Birth (YYYY-MM-DD)"
-          value={dateOfBirth}
-          onChangeText={setDateOfBirth}
-        />
-        <TouchableOpacity style={styles.registerButton} onPress={register}>
-          <Text style={styles.registerButtonText}>Register</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={login}>
+          <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.linkContainer}
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate('Register')} 
         >
-          <Text style={styles.linkText}>Already have an account? Sign in</Text>
+          <Text style={styles.linkText}>You don’t have an account? Register now</Text>
         </TouchableOpacity>
         <Image 
           source={require('../assets/images/startPic.png')} 
@@ -88,7 +73,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#E0F7FA', 
+    backgroundColor: '#E0F7FA', // Azul muito claro
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -106,7 +91,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 12,
   },
-  registerButton: {
+  loginButton: {
     backgroundColor: '#6366F1', // Indigo 500
     paddingVertical: 12,
     paddingHorizontal: 32,
@@ -115,7 +100,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 8,
   },
-  registerButtonText: {
+  loginButtonText: {
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
@@ -133,8 +118,8 @@ const styles = StyleSheet.create({
     position: 'relative',
     bottom: 0,
     width: '100%',
-    height: 330, 
+    height: 390, 
   },
 });
 
-export default RegisterScreen;
+export default LoginScreen;
