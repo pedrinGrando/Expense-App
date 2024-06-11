@@ -1,6 +1,7 @@
 package com.rp.expenseapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.rp.expenseapi.dto.UserDTO;
@@ -15,6 +16,8 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
@@ -26,6 +29,13 @@ public class UserService {
         return userRepository.findById(id)
                              .map(this::convertToDTO)
                              .orElse(null);
+    }
+
+    public UserDTO createUser(UserDTO userDTO) {
+        User user = this.convertToEntity(userDTO);
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        UserDTO createdUserDto = this.convertToDTO(userRepository.save(user));
+        return createdUserDto;
     }
 
     public UserDTO updateUser(Long id, UserDTO userDTO) {

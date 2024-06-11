@@ -28,9 +28,8 @@ public class UserDTO {
     @NotBlank(message = "Email é obrigatório")
     private String email;
 
-    @PastOrPresent(message = "Data de nascimento deve estar no passado ou presente")
     @NotBlank(message = "Data de nascimento é obrigatório")
-    private LocalDate birthDate; // Novo campo adicionado
+    private String birthDate; // Novo campo adicionado
 
     @NotBlank(message = "Senha é obrigatória")
     @Size(min = 6, message = "Senha de possuir no mínimo 6 caracteres")

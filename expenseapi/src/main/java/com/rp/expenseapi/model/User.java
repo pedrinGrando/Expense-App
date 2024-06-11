@@ -10,6 +10,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
@@ -21,7 +26,7 @@ import jakarta.validation.constraints.Size;
 @AllArgsConstructor
 @Builder
 @Entity
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,11 +44,21 @@ public class User {
 
     @NotBlank(message = "Data de nascimento é obrigatório")
     @Column(nullable = false)
-    private LocalDate birthDate;
+    private String birthDate;
 
     @NotBlank(message = "Senha é obrigatória")
     @Size(min = 6, message = "Senha de possuir no mínimo 6 caracteres")
     @Column(nullable = false, length = 100)
     private String password;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 
 }
