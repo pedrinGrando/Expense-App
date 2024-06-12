@@ -1,4 +1,4 @@
-package com.rp.expenseapi.service;
+package com.rp.expenseapi.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,10 +7,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.rp.expenseapi.dto.LoginRequestDTO;
-import com.rp.expenseapi.dto.UserDTO;
-import com.rp.expenseapi.model.User;
-import com.rp.expenseapi.repository.UserRepository;
+import com.rp.expenseapi.dto.auth.AuthenticatedUserDTO;
+import com.rp.expenseapi.dto.auth.LoginRequestDTO;
+import com.rp.expenseapi.dto.user.UserDTO;
+import com.rp.expenseapi.model.user.User;
+import com.rp.expenseapi.repository.user.UserRepository;
 import com.rp.expenseapi.security.JwtResponse;
 import com.rp.expenseapi.security.JwtTokenUtil;
 
@@ -73,9 +74,10 @@ public class UserService {
         User user = userRepository.findByEmail(dto.getEmail())
             .orElseThrow(() -> new IllegalArgumentException("Email inválido"));
         String jwt = jwtTokenUtil.generateToken(user);
+        AuthenticatedUserDTO authenticatedUserDTO = new AuthenticatedUserDTO(dto.getName(), dto.getEmail());
         return JwtResponse.builder()
                           .token(jwt)
-                          .message("Login bem-sucedido")
+                          .authenticatedUser(authenticatedUserDTO)
                           .build();
     }
 

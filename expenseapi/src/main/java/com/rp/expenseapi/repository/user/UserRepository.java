@@ -1,11 +1,11 @@
-package com.rp.expenseapi.repository;
+package com.rp.expenseapi.repository.user;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.rp.expenseapi.model.User;
+import com.rp.expenseapi.model.user.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

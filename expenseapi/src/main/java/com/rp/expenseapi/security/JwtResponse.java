@@ -1,5 +1,7 @@
 package com.rp.expenseapi.security;
 
+import com.rp.expenseapi.dto.auth.AuthenticatedUserDTO;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -9,5 +11,5 @@ import lombok.RequiredArgsConstructor;
 @Builder
 public class JwtResponse {
 	private final String token;
-	private final String message;
+	private final AuthenticatedUserDTO authenticatedUser;
 }

@@ -1,4 +1,4 @@
-package com.rp.expenseapi.controller;
+package com.rp.expenseapi.controller.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rp.expenseapi.dto.LoginRequestDTO;
-import com.rp.expenseapi.dto.UserDTO;
+import com.rp.expenseapi.dto.auth.LoginRequestDTO;
+import com.rp.expenseapi.dto.auth.NewUserDTO;
+import com.rp.expenseapi.dto.user.UserDTO;
 import com.rp.expenseapi.security.JwtResponse;
-import com.rp.expenseapi.service.UserService;
+import com.rp.expenseapi.service.user.UserService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,10 +22,11 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDTO> signUp(@RequestBody UserDTO newUserDto) {
+    public ResponseEntity<NewUserDTO> signUp(@RequestBody UserDTO newUserDto) {
         try {
-            UserDTO newUser = userService.createUser(newUserDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+            UserDTO createdUser = userService.createUser(newUserDto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+            .body(new NewUserDTO(createdUser.getName(), createdUser.getEmail(), createdUser.getBirthDate()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
         }

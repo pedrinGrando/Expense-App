@@ -1,6 +1,5 @@
 package com.rp.expenseapi.security;
 
-import com.rp.expenseapi.model.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -18,6 +17,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.rp.expenseapi.model.user.User;
 
 @Component
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package com.rp.expenseapi.model;
+package com.rp.expenseapi.model.user;
 
 import lombok.Data;
 import lombok.AllArgsConstructor;

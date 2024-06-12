@@ -1,4 +1,4 @@
-package com.rp.expenseapi.dto;
+package com.rp.expenseapi.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
