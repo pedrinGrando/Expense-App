@@ -1,35 +1,57 @@
 // screens/RegisterScreen.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert, Image, ActivityIndicator } from 'react-native';
 
 const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const register = async () => {
     try {
-      const response = await fetch('https://endpoint', {
+      setLoading(true);
+      const response = await fetch('http://192.168.0.21:8080/api/auth/signup', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password, dateOfBirth }),
+        body: JSON.stringify({ name, email, password, birthDate: dateOfBirth }),
       });
-
-      const data = await response.json();
-
+  
+      const textResponse = await response.text();
+      console.log('Raw response:', textResponse);
+  
+      let data;
+      try {
+        data = JSON.parse(textResponse);
+        console.log('Parsed response:', data);
+      } catch (parseError) {
+        console.error('JSON parsing error:', parseError);
+        data = { message: textResponse }; 
+      }
+  
       if (response.ok) {
         console.log('Registro bem-sucedido:', data);
-        Alert.alert('Registro bem-sucedido', `Bem-vindo, ${data.user.name}`);
-        navigation.navigate('Login');
+        Alert.alert('Registro bem-sucedido', `Bem-vindo, ${data.name}`);
+        setEmail('');
+        setDateOfBirth('');
+        setPassword('');
+        setName('');
+        setLoading(false);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
       } else {
         console.error('Erro no registro:', data);
+        setLoading(false);
         Alert.alert('Erro no registro', data.message || 'Algo deu errado, tente novamente.');
       }
     } catch (error) {
       console.error('Erro de rede:', error);
+      setLoading(false);
       Alert.alert('Erro de rede', 'Não foi possível conectar ao servidor. Verifique sua conexão com a internet e tente novamente.');
     }
   };
@@ -65,9 +87,13 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           value={dateOfBirth}
           onChangeText={setDateOfBirth}
         />
-        <TouchableOpacity style={styles.registerButton} onPress={register}>
-          <Text style={styles.registerButtonText}>Register</Text>
-        </TouchableOpacity>
+        {loading ? (
+          <ActivityIndicator size="large" color="#6366F1" />
+        ) : (
+          <TouchableOpacity style={styles.registerButton} onPress={register}>
+            <Text style={styles.registerButtonText}>Register</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           style={styles.linkContainer}
           onPress={() => navigation.navigate('Login')}
@@ -82,7 +108,7 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>
     </TouchableWithoutFeedback>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

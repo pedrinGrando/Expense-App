@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 
-const HomeScreen: React.FC = () => {
+const ProfileScreen: React.FC = () => {
   const [scenario, setScenario] = React.useState<'saved' | 'notSaved' | 'noExpenses'>('noExpenses');
 
   const renderScenario = () => {
@@ -13,7 +13,7 @@ const HomeScreen: React.FC = () => {
         return <Text style={styles.scenarioText}>Unfortunately, you didn't save money this month.</Text>;
       case 'noExpenses':
       default:
-        return <Text style={styles.scenarioText}>You have no expenses recorded yet.</Text>;
+        return <Text style={styles.scenarioText}>Profile.</Text>;
     }
   };
 
@@ -21,9 +21,7 @@ const HomeScreen: React.FC = () => {
     <View style={styles.container}>
       {renderScenario()}
       <View style={styles.buttonContainer}>
-        <Button title="Saved Money" onPress={() => setScenario('saved')} />
-        <Button title="Not Saved Money" onPress={() => setScenario('notSaved')} />
-        <Button title="No Expenses" onPress={() => setScenario('noExpenses')} />
+       
       </View>
     </View>
   );
@@ -49,4 +47,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default HomeScreen;
+export default ProfileScreen;

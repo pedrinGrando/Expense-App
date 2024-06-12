@@ -8,7 +8,7 @@ const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const login = async () => {
     try {
-      const response = await fetch('https://endpoint', {
+      const response = await fetch('http://192.168.0.21:8080/api/auth/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
