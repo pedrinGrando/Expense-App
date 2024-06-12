@@ -26,8 +26,8 @@ public class UserService {
     @Value("${jwt.secret}")
     String secret;
     
-    final private AuthenticationManager authenticationManager;
-    final private PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserRepository userRepository;
@@ -60,15 +60,16 @@ public class UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (passwordEncoder.matches(loginRequestDTO.getPassword(), user.getPassword())) {
-                return signin(this.convertToDTO(user));
+                UserDTO userDTO = this.convertToDTO(user);
+                return generateToken(userDTO, loginRequestDTO.getPassword());
             }
         }
         return null;
     }
 
-    private JwtResponse signin(UserDTO dto) {
+    private JwtResponse generateToken(UserDTO dto, String password) {
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+            new UsernamePasswordAuthenticationToken(dto.getEmail(), password));
         User user = userRepository.findByEmail(dto.getEmail())
             .orElseThrow(() -> new IllegalArgumentException("Email inválido"));
         String jwt = jwtTokenUtil.generateToken(user);

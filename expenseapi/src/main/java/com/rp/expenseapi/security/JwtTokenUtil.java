@@ -2,14 +2,10 @@ package com.rp.expenseapi.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
-import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,25 +13,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenUtil {
-  
-  private SecretKey secretKey;
 
   // 1 week
   public static final long JWT_TOKEN_VALIDITY_TIME = 7 * 24 * 60 * 60;
 
   @Value("${jwt.secret}")
   private String secret;
-
-  @PostConstruct
-  public void init() {
-      if (secret == null || secret.length() < 32) {
-          // Gerar uma chave segura com tamanho suficiente
-          this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-      } else {
-          // Converter a string `secret` para `SecretKey`
-          this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-      }
-  }
 
   //retrieve username from jwt token
   public String getUsernameFromToken(String token) {
@@ -54,7 +37,7 @@ public class JwtTokenUtil {
 
   //for retrieveing any information from token we will need the secret key
   private Claims getAllClaimsFromToken(String token) {
-    return Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+    return Jwts.parser().setSigningKey(secret).build().parseClaimsJws(token).getBody();
   }
 
   //check if the token has expired
