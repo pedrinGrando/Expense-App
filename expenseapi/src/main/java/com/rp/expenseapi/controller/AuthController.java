@@ -26,7 +26,7 @@ public class AuthController {
         try {
             UserDTO createdUser = userService.createUser(newUserDto);
             return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new NewUserDTO(createdUser.getName(), createdUser.getEmail(), createdUser.getBirthDate()));
+            .body(new NewUserDTO(createdUser.getName(), createdUser.getEmail()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
         }

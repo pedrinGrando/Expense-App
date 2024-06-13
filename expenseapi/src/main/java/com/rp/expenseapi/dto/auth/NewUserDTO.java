@@ -10,5 +10,4 @@ import lombok.Data;
 public class NewUserDTO {
     private String name;
     private String email;
-    private LocalDate birthDate;
 }

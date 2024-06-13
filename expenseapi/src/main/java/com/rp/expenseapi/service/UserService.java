@@ -60,7 +60,7 @@ public class UserService {
         User user = userRepository.findByEmail(dto.getEmail())
             .orElseThrow(() -> new IllegalArgumentException("Email inválido"));
         String jwt = jwtTokenUtil.generateToken(user);
-        AuthenticatedUserDTO authenticatedUserDTO = new AuthenticatedUserDTO(dto.getName(), dto.getEmail());
+        AuthenticatedUserDTO authenticatedUserDTO = new AuthenticatedUserDTO(dto.getName(), dto.getEmail(), dto.getBirthDate());
         return JwtResponse.builder()
                           .token(jwt)
                           .authenticatedUser(authenticatedUserDTO)
