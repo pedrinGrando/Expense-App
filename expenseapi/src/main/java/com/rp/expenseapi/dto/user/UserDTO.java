@@ -1,5 +1,7 @@
 package com.rp.expenseapi.dto.user;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +16,6 @@ public class UserDTO {
     private Long id;
     private String name;
     private String email;
-    private String birthDate; // Novo campo adicionado
+    private LocalDate birthDate; // Novo campo adicionado
     private String password;
 }

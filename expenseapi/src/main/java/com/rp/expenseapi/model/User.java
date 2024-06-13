@@ -1,4 +1,4 @@
-package com.rp.expenseapi.model.user;
+package com.rp.expenseapi.model;
 
 import lombok.Data;
 import lombok.AllArgsConstructor;
@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -36,7 +37,7 @@ public class User implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    private String birthDate;
+    private LocalDate birthDate;
 
     @Column(nullable = false, length = 100)
     private String password;

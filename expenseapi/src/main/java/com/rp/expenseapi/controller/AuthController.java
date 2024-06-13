@@ -1,4 +1,4 @@
-package com.rp.expenseapi.controller.auth;
+package com.rp.expenseapi.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,7 @@ import com.rp.expenseapi.dto.auth.LoginRequestDTO;
 import com.rp.expenseapi.dto.auth.NewUserDTO;
 import com.rp.expenseapi.dto.user.UserDTO;
 import com.rp.expenseapi.security.JwtResponse;
-import com.rp.expenseapi.service.user.UserService;
+import com.rp.expenseapi.service.UserService;
 
 @RestController
 @RequestMapping("/api/auth")

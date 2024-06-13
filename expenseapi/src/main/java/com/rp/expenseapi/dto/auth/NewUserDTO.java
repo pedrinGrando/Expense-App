@@ -1,5 +1,7 @@
 package com.rp.expenseapi.dto.auth;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -8,5 +10,5 @@ import lombok.Data;
 public class NewUserDTO {
     private String name;
     private String email;
-    private String birthDate;
+    private LocalDate birthDate;
 }
