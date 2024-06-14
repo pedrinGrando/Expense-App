@@ -1,42 +1,46 @@
 // screens/RegisterScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert, Image, ActivityIndicator } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const register = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://192.168.0.21:8080/api/auth/signup', { 
+
+      const formattedDateOfBirth = dateOfBirth ? dateOfBirth.toISOString().split('T')[0] : '';
+      const response = await fetch('http://10.10.102.205:8080/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password, birthDate: dateOfBirth }),
+        body: JSON.stringify({ name, email, password, birthDate: formattedDateOfBirth }),
       });
-  
+
       const textResponse = await response.text();
       console.log('Raw response:', textResponse);
-  
+
       let data;
       try {
         data = JSON.parse(textResponse);
         console.log('Parsed response:', data);
       } catch (parseError) {
         console.error('JSON parsing error:', parseError);
-        data = { message: textResponse }; 
+        data = { message: textResponse };
       }
-  
+
       if (response.ok) {
         console.log('Registro bem-sucedido:', data);
         Alert.alert('Registro bem-sucedido', `Bem-vindo, ${data.name}`);
         setEmail('');
-        setDateOfBirth('');
+        setDateOfBirth(undefined);
         setPassword('');
         setName('');
         setLoading(false);
@@ -53,6 +57,13 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       console.error('Erro de rede:', error);
       setLoading(false);
       Alert.alert('Erro de rede', 'Não foi possível conectar ao servidor. Verifique sua conexão com a internet e tente novamente.');
+    }
+  };
+
+  const handleDateChange = (event: any, selectedDate: Date | undefined) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setDateOfBirth(selectedDate);
     }
   };
 
@@ -81,12 +92,16 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           secureTextEntry
           onChangeText={setPassword}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Date of Birth (YYYY-MM-DD)"
-          value={dateOfBirth}
-          onChangeText={setDateOfBirth}
+        <Text>
+          Sua Data de Nascimento
+        </Text>
+        <DateTimePicker
+          value={dateOfBirth || new Date()}
+          mode="date"
+          display="default"
+          onChange={handleDateChange}
         />
+
         {loading ? (
           <ActivityIndicator size="large" color="#6366F1" />
         ) : (
@@ -100,8 +115,8 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         >
           <Text style={styles.linkText}>Already have an account? Sign in</Text>
         </TouchableOpacity>
-        <Image 
-          source={require('../assets/images/startPic.png')} 
+        <Image
+          source={require('../assets/images/startPic.png')}
           style={styles.bottomImage}
           resizeMode="contain"
         />
@@ -114,7 +129,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#E0F7FA', 
+    backgroundColor: '#E0F7FA',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -159,7 +174,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     bottom: 0,
     width: '100%',
-    height: 330, 
+    height: 330,
   },
 });
 

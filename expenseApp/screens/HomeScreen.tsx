@@ -1,9 +1,28 @@
 // screens/HomeScreen.tsx
-import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button, Alert } from 'react-native';
 
 const HomeScreen: React.FC = () => {
   const [scenario, setScenario] = React.useState<'saved' | 'notSaved' | 'noExpenses'>('noExpenses');
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('authenticatedUser');
+        if (userData) {
+          const parsedUserData = JSON.parse(userData);
+          setUser(parsedUserData);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+        Alert.alert('Erro', 'Não foi possível carregar os dados do usuário.');
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   const renderScenario = () => {
     switch (scenario) {
@@ -19,11 +38,12 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {renderScenario()}
+      Hello, {user.name}!
       <View style={styles.buttonContainer}>
-        <Button title="Saved Money" onPress={() => setScenario('saved')} />
-        <Button title="Not Saved Money" onPress={() => setScenario('notSaved')} />
-        <Button title="No Expenses" onPress={() => setScenario('noExpenses')} />
+        
+      </View>
+      <View>
+        <Button title="Logout"/>
       </View>
     </View>
   );

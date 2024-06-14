@@ -11,6 +11,7 @@ import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/Profile';
 import HistoryScreen from './screens/HistoryScreen';
+import AddExpenseScreen from './screens/AddExpenseScreen';
 
 // Configuração dos stacks e tabs
 const Stack = createStackNavigator();
@@ -47,6 +48,9 @@ const MainTab = () => (
           case 'History':
             iconName = focused ? 'time' : 'time-outline';
             break;
+            case 'Expense':
+              iconName = focused ? 'money' : 'money-outline';
+              break;
           default:
             iconName = 'circle';
         }
@@ -60,15 +64,22 @@ const MainTab = () => (
     })}
   >
     <Tab.Screen 
-      name="Home" 
-      component={HomeScreen} 
-      options={{ tabBarLabel: '' }} 
-    />
-    <Tab.Screen 
       name="Profile" 
       component={ProfileScreen} 
       options={{ tabBarLabel: '' }} 
     />
+    <Tab.Screen 
+      name="Home" 
+      component={HomeScreen} 
+      options={{ tabBarLabel: '' }} 
+    />
+
+   <Tab.Screen 
+      name="Expense" 
+      component={AddExpenseScreen} 
+      options={{ tabBarLabel: '' }} 
+    />
+  
     <Tab.Screen 
       name="History" 
       component={HistoryScreen} 

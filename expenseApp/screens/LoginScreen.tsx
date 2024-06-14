@@ -1,33 +1,54 @@
 // screens/LoginScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const login = async () => {
     try {
-      const response = await fetch('http://192.168.0.21:8080/api/auth/', {
+      setLoading(true);
+      const response = await fetch('http://10.10.102.205:8080/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password }), 
       });
 
-      const data = await response.json();
+      const textResponse = await response.text();
+      console.log('Raw response:', textResponse);
+
+      let data;
+      try {
+        data = JSON.parse(textResponse); 
+        console.log('Parsed response:', data);
+      } catch (parseError) {
+        console.error('JSON parsing error:', parseError);
+        data = { message: textResponse }; 
+      }
 
       if (response.ok) {
         console.log('Login bem-sucedido:', data);
-        Alert.alert('Login bem-sucedido', `Bem-vindo, ${data.user.name}`);
+        await AsyncStorage.setItem('authenticatedUser', JSON.stringify(data.authenticatedUser));
+        await AsyncStorage.setItem('jwtToken', JSON.stringify(data));
+        Alert.alert('Login bem-sucedido', `Bem-vindo`);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
       } else {
         console.error('Erro no login:', data);
-        Alert.alert('Erro no login', data.message || 'Algo deu errado, tente novamente.');
+        Alert.alert('Email ou Senha inválidos.');
       }
     } catch (error) {
       console.error('Erro de rede:', error);
       Alert.alert('Erro de rede', 'Não foi possível conectar ao servidor. Verifique sua conexão com a internet e tente novamente.');
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -50,12 +71,14 @@ const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           secureTextEntry
           onChangeText={setPassword}
         />
-        <TouchableOpacity style={styles.loginButton} onPress={login}>
-          <Text style={styles.loginButtonText}>Login</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={login} disabled={loading}>
+          <Text style={styles.loginButtonText}>
+            {loading ? 'Loading...' : 'Login'}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.linkContainer}
-          onPress={() => navigation.navigate('Register')} 
+          onPress={() => navigation.navigate('Register')}
         >
           <Text style={styles.linkText}>You don’t have an account? Register now</Text>
         </TouchableOpacity>
@@ -67,7 +90,7 @@ const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       </View>
     </TouchableWithoutFeedback>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
