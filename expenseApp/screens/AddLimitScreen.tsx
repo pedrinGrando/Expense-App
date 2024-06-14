@@ -1,94 +1,77 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Button, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; 
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert, Image, Button } from 'react-native';
 
-const AddExpenseScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [month, setMonth] = useState('Janeiro'); 
+const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const [month, setMonth] = useState('Janeiro');
+  const [limit, setLimit] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const saveExpense = async () => {
+  const saveLimit = async () => {
     try {
-      if (!description || !amount || !month) {
+      if (!month || !limit) {
         Alert.alert('Erro', 'Por favor, preencha todos os campos.');
         return;
       }
 
       setLoading(true);
 
-      const expense = {
-        description,
-        amount: parseFloat(amount),
+      const limitData = {
         month,
+        limit: parseFloat(limit),
       };
 
-      const response = await fetch('http://10.10.102.205:8080/api/expenses/add', {
+      const response = await fetch('http://10.10.101.180:8080/api/limits/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           // 'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(expense), 
+        body: JSON.stringify(limitData),
       });
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log('Despesa adicionada:', responseData);
-        Alert.alert('Sucesso', 'Despesa adicionada com sucesso!');
-        navigation.goBack(); 
+        console.log('Limite adicionado:', responseData);
+        Alert.alert('Sucesso', 'Limite de gasto adicionado com sucesso!');
+        navigation.goBack();
       } else {
         const errorData = await response.json();
-        console.error('Erro ao adicionar despesa:', errorData);
-        Alert.alert('Erro', errorData.message || 'Não foi possível adicionar a despesa. Tente novamente.');
+        console.error('Erro ao adicionar limite:', errorData);
+        Alert.alert('Erro', errorData.message || 'Não foi possível adicionar o limite. Tente novamente.');
       }
     } catch (error) {
       console.error('Erro ao fazer a requisição:', error);
-      Alert.alert('Erro', 'Não foi possível adicionar a despesa. Verifique sua conexão com a internet e tente novamente.');
+      Alert.alert('Erro', 'Não foi possível adicionar o limite. Verifique sua conexão com a internet e tente novamente.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Adicionar Despesa</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Descrição"
-        value={description}
-        onChangeText={setDescription}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Valor"
-        value={amount}
-        onChangeText={setAmount}
-        keyboardType="numeric" 
-      />
-      <Picker
-        selectedValue={month}
-        style={styles.picker}
-        onValueChange={(itemValue) => setMonth(itemValue)}
-      >
-        <Picker.Item label="Janeiro" value="Janeiro" />
-        <Picker.Item label="Fevereiro" value="Fevereiro" />
-        <Picker.Item label="Março" value="Março" />
-        <Picker.Item label="Abril" value="Abril" />
-        <Picker.Item label="Maio" value="Maio" />
-        <Picker.Item label="Junho" value="Junho" />
-        <Picker.Item label="Julho" value="Julho" />
-        <Picker.Item label="Agosto" value="Agosto" />
-        <Picker.Item label="Setembro" value="Setembro" />
-        <Picker.Item label="Outubro" value="Outubro" />
-        <Picker.Item label="Novembro" value="Novembro" />
-        <Picker.Item label="Dezembro" value="Dezembro" />
-      </Picker>
-      <View style={styles.buttonContainer}>
-        <Button title="Salvar Despesa" onPress={saveExpense} disabled={loading} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Add your month limit</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Month (ex: Janeiro, Fevereiro)"
+          value={month}
+          onChangeText={setMonth}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Limit"
+          value={limit}
+          onChangeText={setLimit}
+          keyboardType="numeric"
+        />
+        <TouchableOpacity style={styles.buttonContainer} onPress={saveLimit} disabled={loading}>
+          <Text style={styles.linkText}>
+            {loading ? 'Loading...' : 'Save'}
+          </Text>
+        </TouchableOpacity>
+        {loading && <Text style={styles.loadingText}>Saving...</Text>}
       </View>
-      {loading && <Text style={styles.loadingText}>Salvando...</Text>}
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -113,16 +96,18 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 12,
   },
-  picker: {
-    height: 50,
-    width: '100%',
-    marginBottom: 16,
-  },
   buttonContainer: {
-    marginTop: 16,
+    backgroundColor: '#6366F1', // Indigo 500
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 12,
     width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  linkText: {
+    color: '#FFF',
+    fontSize: 18,
   },
   loadingText: {
     marginTop: 16,
@@ -131,4 +116,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddExpenseScreen;
+export default AddLimitScreen;

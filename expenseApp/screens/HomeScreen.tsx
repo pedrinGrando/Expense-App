@@ -38,12 +38,10 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      Hello, {user.name}!
+      <Text>
+        Hello!
+      </Text>
       <View style={styles.buttonContainer}>
-        
-      </View>
-      <View>
-        <Button title="Logout"/>
       </View>
     </View>
   );

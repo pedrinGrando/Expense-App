@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Button, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert, Image, Button } from 'react-native';
 
 const AddExpenseScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [description, setDescription] = useState('');
@@ -10,7 +10,7 @@ const AddExpenseScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const saveExpense = async () => {
     try {
       if (!description || !amount || !month) {
-        Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+        Alert.alert('Error', 'Please, fill all fields.');
         return;
       }
 
@@ -50,26 +50,30 @@ const AddExpenseScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={styles.container}>
-      <Text style={styles.title}>Adicionar Despesa</Text>
+      <Text style={styles.title}>Add Expense</Text>
       <TextInput
         style={styles.input}
-        placeholder="Descrição"
+        placeholder="Description"
         value={description}
         onChangeText={setDescription}
       />
       <TextInput
         style={styles.input}
-        placeholder="Valor"
+        placeholder="Value"
         value={amount}
         onChangeText={setAmount}
         keyboardType="numeric" 
       />
-      <View style={styles.buttonContainer}>
-        <Button title="Salvar Despesa" onPress={saveExpense} disabled={loading} />
-      </View>
+      <TouchableOpacity style={styles.buttonContainer} onPress={saveExpense} disabled={loading}>
+          <Text style={styles.linkText}>
+            {loading ? 'Loading...' : 'Save'}
+          </Text>
+        </TouchableOpacity>
       {loading && <Text style={styles.loadingText}>Saving...</Text>}
     </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -100,10 +104,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   buttonContainer: {
-    marginTop: 16,
+    backgroundColor: '#6366F1', // Indigo 500
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 12,
     width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  linkText: {
+    color: '#FFF',
+    fontSize: 18,
   },
   loadingText: {
     marginTop: 16,

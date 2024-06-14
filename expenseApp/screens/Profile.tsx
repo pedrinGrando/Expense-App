@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, Button, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format } from 'date-fns'; 
 
 const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
+      setLoading(true);
       try {
         const userData = await AsyncStorage.getItem('authenticatedUser');
         if (userData) {
           const parsedUserData = JSON.parse(userData);
           setUser(parsedUserData);
+          setLoading(false);
         }
       } catch (error) {
+        setLoading(false);
         console.error('Erro ao carregar dados do usuário:', error);
         Alert.alert('Erro', 'Não foi possível carregar os dados do usuário.');
       }
@@ -25,6 +29,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const logout = async () => {
     try {
+      setLoading(true);
       await AsyncStorage.removeItem('token');
       await AsyncStorage.removeItem('authenticatedUser');
       Alert.alert('Logout', 'Você foi deslogado com sucesso.');
@@ -33,6 +38,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         routes: [{ name: 'Auth' }],
       });
     } catch (error) {
+      setLoading(false);
       console.error('Erro ao fazer logout:', error);
       Alert.alert('Erro', 'Não foi possível deslogar. Tente novamente.');
     }
@@ -71,9 +77,11 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Text style={styles.label}>Date of Birth:</Text>
         <Text style={styles.value}>{formatDate(user.birthDate)}</Text>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button title="Logout" onPress={logout} />
-      </View>
+      <TouchableOpacity style={styles.buttonContainer} onPress={logout} disabled={loading}>
+          <Text style={styles.linkText}>
+            {loading ? 'Loading...' : 'Logout'}
+          </Text>
+        </TouchableOpacity>
     </View>
   );
 };
@@ -109,6 +117,13 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-around',
+    backgroundColor: 'red', 
+    padding: 7,
+    borderRadius: 15, 
+  },
+  linkText: {
+    color: '#FFF',
+    fontSize: 18,
   },
 });
 

@@ -5,15 +5,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-// Importações das telas
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/Profile';
-import HistoryScreen from './screens/HistoryScreen';
 import AddExpenseScreen from './screens/AddExpenseScreen';
+import AddLimitScreen from './screens/AddLimitScreen';
 
-// Configuração dos stacks e tabs
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -33,6 +31,7 @@ const AuthStack = () => (
   </Stack.Navigator>
 );
 
+// Tab Principal
 const MainTab = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
@@ -45,12 +44,12 @@ const MainTab = () => (
           case 'Profile':
             iconName = focused ? 'person' : 'person-outline';
             break;
-          case 'History':
-            iconName = focused ? 'time' : 'time-outline';
+          case 'Expense':
+            iconName = focused ? 'cash' : 'cash-outline';
             break;
-            case 'Expense':
-              iconName = focused ? 'money' : 'money-outline';
-              break;
+          case 'Limit':
+            iconName = focused ? 'speedometer' : 'speedometer-outline';
+            break;
           default:
             iconName = 'circle';
         }
@@ -66,24 +65,42 @@ const MainTab = () => (
     <Tab.Screen 
       name="Profile" 
       component={ProfileScreen} 
-      options={{ tabBarLabel: '' }} 
+      options={{ 
+        tabBarLabel: '', 
+        title: 'Profile',
+        headerStyle: { backgroundColor: '#E0F7FA' }, 
+        headerTitleStyle: { color: '#000' }
+      }} 
     />
     <Tab.Screen 
       name="Home" 
       component={HomeScreen} 
-      options={{ tabBarLabel: '' }} 
+      options={{ 
+        tabBarLabel: '', 
+        title: 'Home',
+        headerStyle: { backgroundColor: '#E0F7FA' }, 
+        headerTitleStyle: { color: '#000' } 
+      }} 
     />
-
-   <Tab.Screen 
+    <Tab.Screen 
       name="Expense" 
       component={AddExpenseScreen} 
-      options={{ tabBarLabel: '' }} 
+      options={{ 
+        tabBarLabel: '', 
+        title: 'Expense',
+        headerStyle: { backgroundColor: '#E0F7FA' }, 
+        headerTitleStyle: { color: '#000' } 
+      }} 
     />
-  
     <Tab.Screen 
-      name="History" 
-      component={HistoryScreen} 
-      options={{ tabBarLabel: '' }} 
+      name="Limit" 
+      component={AddLimitScreen} 
+      options={{ 
+        tabBarLabel: '', 
+        title: 'Limit',
+        headerStyle: { backgroundColor: '#E0F7FA' }, 
+        headerTitleStyle: { color: '#000' } 
+      }} 
     />
   </Tab.Navigator>
 );
