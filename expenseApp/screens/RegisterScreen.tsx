@@ -46,7 +46,7 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         setLoading(false);
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Main' }],
+          routes: [{ name: 'Auth' }],
         });
       } else {
         console.error('Erro no registro:', data);

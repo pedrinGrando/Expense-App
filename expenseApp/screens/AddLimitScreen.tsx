@@ -3,6 +3,7 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
 import { format } from 'date-fns'; 
+import { API_URL, TOKEN_SECRET } from '@env';
 
 const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [limit, setLimit] = useState('');
@@ -46,11 +47,11 @@ const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         date: yearMonth
       };
 
-      const response = await fetch('http://192.168.0.21:8080/api/limit', {
+      const response = await fetch(`${API_URL}/api/limit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb2dyYW5kbzZAZ21haWwuY29tIiwiaWF0IjoxNzE4NDc0MjU3LCJleHAiOjE3MTkwNzkwNTd9.fPl8-rbCnGdQ6QEy9Ot1oRtdHObDp3ysj3AqUqkI7jM"}`,
+          'Authorization': `Bearer ${TOKEN_SECRET}`,
         },
         body: JSON.stringify(limitData),
       });

@@ -2,6 +2,7 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, Alert, TouchableOpacity, Modal, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL, TOKEN_SECRET } from '@env';
 
 const ExpenseHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [month, setMonth] = useState('Janeiro');
@@ -33,12 +34,12 @@ const ExpenseHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
     try {
       setLoading(true);
       const yearMonth = new Date().getFullYear() + '-' + formatMonth(month);
-      const response = await fetch(`http://192.168.0.21:8080/api/expense?date=${yearMonth}`, {
+      const response = await fetch(`${API_URL}/api/expense?date=${yearMonth}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb2dyYW5kbzZAZ21haWwuY29tIiwiaWF0IjoxNzE4NDc0MjU3LCJleHAiOjE3MTkwNzkwNTd9.fPl8-rbCnGdQ6QEy9Ot1oRtdHObDp3ysj3AqUqkI7jM"}`,
-        },
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${TOKEN_SECRET}`,
+          },
       });
 
       if (response.ok) {
@@ -90,12 +91,12 @@ const ExpenseHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
           text: 'Sim',
           onPress: async () => {
             try {
-              const response = await fetch(`http://192.168.0.21:8080/api/expense/${id}`, {
+              const response = await fetch(`${API_URL}/api/expense/${id}`, {
                 method: 'DELETE',
                 headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb2dyYW5kbzZAZ21haWwuY29tIiwiaWF0IjoxNzE4NDc0MjU3LCJleHAiOjE3MTkwNzkwNTd9.fPl8-rbCnGdQ6QEy9Ot1oRtdHObDp3ysj3AqUqkI7jM"}`,
-                },
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${TOKEN_SECRET}`,
+                  },
               });
 
               if (response.ok) {
@@ -121,12 +122,12 @@ const ExpenseHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
     if (!selectedExpense) return;
 
     try {
-      const response = await fetch(`http://192.168.0.21:8080/api/expense/${selectedExpense.id}`, {
+      const response = await fetch(`${API_URL}/api/expense/${selectedExpense.id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb2dyYW5kbzZAZ21haWwuY29tIiwiaWF0IjoxNzE4NDc0MjU3LCJleHAiOjE3MTkwNzkwNTd9.fPl8-rbCnGdQ6QEy9Ot1oRtdHObDp3ysj3AqUqkI7jM"}`,
-        },
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${TOKEN_SECRET}`,
+          },
         body: JSON.stringify(selectedExpense),
       });
 

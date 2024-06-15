@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { API_URL, TOKEN_SECRET } from '@env';
 
 const HomeScreen: React.FC = () => {
   const [scenario, setScenario] = useState<'saved' | 'notSaved' | 'noExpenses'>('noExpenses');
@@ -39,19 +40,21 @@ const HomeScreen: React.FC = () => {
 
       const yearMonth = new Date().getFullYear() + '-' + formatMonth(selectedMonth);
       try {
-        const response = await fetch(`http://192.168.0.21:8080/api/savings/check?date=${yearMonth}`, {
+        const response = await fetch(`${API_URL}/api/limit/month-result?date=${yearMonth}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb2dyYW5kbzZAZ21haWwuY29tIiwiaWF0IjoxNzE4NDc0MjU3LCJleHAiOjE3MTkwNzkwNTd9.fPl8-rbCnGdQ6QEy9Ot1oRtdHObDp3ysj3AqUqkI7jM"}`,
+            'Authorization': `Bearer ${TOKEN_SECRET}`,  // Use o token corretamente
           },
         });
 
         if (response.ok) {
           const data = await response.json();
-          setTotalExpenses(data.totalExpenses || 0);
-          setMonthLimit(data.monthLimit || 0);
-          if (data.result) {
+          console.log('Resposta da API:', data);
+          setTotalExpenses(data.expensesSum || 0);
+          setMonthLimit(data.expenseLimit || 0);
+
+          if (data.isSavingsAchieved) {
             setScenario('saved');
           } else {
             setScenario('notSaved');
@@ -59,11 +62,10 @@ const HomeScreen: React.FC = () => {
         } else {
           const errorData = await response.json();
           console.error('Erro ao verificar economia:', errorData);
-          Alert.alert('Erro', errorData.message || 'Não foi possível verificar a economia. Tente novamente.');
+          setScenario('noExpenses');
         }
       } catch (error) {
-        console.error('Erro ao fazer a requisição:', error);
-        Alert.alert('Erro', 'Não foi possível verificar a economia. Verifique sua conexão com a internet e tente novamente.');
+        setScenario('noExpenses');
       }
     };
 
@@ -102,7 +104,7 @@ const HomeScreen: React.FC = () => {
 
   const renderProgressBar = () => {
     if (monthLimit > 0) {
-      const progress = Math.min(totalExpenses / monthLimit, 1); 
+      const progress = Math.min(totalExpenses / monthLimit, 1);
       return (
         <View style={styles.progressBarContainer}>
           <Text style={styles.progressText}>Despesas: R$ {totalExpenses.toFixed(2)} / Limite: R$ {monthLimit.toFixed(2)}</Text>

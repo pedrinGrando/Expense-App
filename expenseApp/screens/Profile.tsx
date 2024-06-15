@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format } from 'date-fns'; 
+import { API_URL, TOKEN_SECRET } from '@env';
 
 const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [user, setUser] = useState<any>(null);
