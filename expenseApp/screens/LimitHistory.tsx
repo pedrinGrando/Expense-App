@@ -1,6 +1,6 @@
 import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LimitHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -8,6 +8,8 @@ const LimitHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [limit, setLimit] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string>('');
+  const [isEditing, setIsEditing] = useState(false); 
+  const [newLimitValue, setNewLimitValue] = useState<string>(''); 
 
   useEffect(() => {
     const loadToken = async () => {
@@ -42,6 +44,7 @@ const LimitHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
       if (response.ok) {
         const data = await response.json();
         setLimit(data);
+        setNewLimitValue(data.value ? data.value.toString() : ''); 
       } else {
         const errorData = await response.json();
         console.error('Erro ao buscar limite:', errorData);
@@ -53,6 +56,49 @@ const LimitHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const updateLimit = async () => {
+    try {
+      setLoading(true);
+      const yearMonth = new Date().getFullYear() + '-' + formatMonth(month);
+
+      const updatedLimit = {
+        ...limit,
+        value: parseFloat(newLimitValue),
+        date: yearMonth,
+      };
+
+      const response = await fetch(`http://192.168.0.21:8080/api/limit/${limit.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedLimit),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        setLimit(responseData);
+        setIsEditing(false);
+        Alert.alert('Sucesso', 'Limite atualizado com sucesso!');
+      } else {
+        const errorData = await response.json();
+        console.error('Erro ao atualizar limite:', errorData);
+        Alert.alert('Erro', errorData.message || 'Não foi possível atualizar o limite. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro ao fazer a requisição:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar o limite. Verifique sua conexão com a internet e tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isCurrentMonth = (): boolean => {
+    const currentMonth = new Date().getMonth() + 1; 
+    return formatMonth(month) === currentMonth.toString().padStart(2, '0');
   };
 
   const formatMonth = (monthName: string): string => {
@@ -103,7 +149,42 @@ const LimitHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
           {limit ? (
             <>
               <Text style={styles.limitText}>Limite para {month}:</Text>
-              <Text style={styles.limitAmount}>R$ {limit.value.toFixed(2)}</Text>
+              {isEditing && isCurrentMonth() ? (
+                <>
+                  <TextInput
+                    style={styles.input}
+                    value={newLimitValue}
+                    onChangeText={setNewLimitValue}
+                    keyboardType="numeric"
+                  />
+                  <View style={styles.buttonRow}>
+                    <TouchableOpacity
+                      style={[styles.button, styles.saveButton]}
+                      onPress={updateLimit}
+                    >
+                      <Text style={styles.buttonText}>Salvar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.button, styles.cancelButton]}
+                      onPress={() => setIsEditing(false)}
+                    >
+                      <Text style={styles.buttonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.limitAmount}>R$ {limit.value.toFixed(2)}</Text>
+                  {isCurrentMonth() && (
+                    <TouchableOpacity
+                      style={styles.editButton}
+                      onPress={() => setIsEditing(true)}
+                    >
+                      <Text style={styles.editButtonText}>Editar</Text>
+                    </TouchableOpacity>
+                  )}
+                </>
+              )}
             </>
           ) : (
             <Text style={styles.noLimitText}>Nenhum limite encontrado para {month}.</Text>
@@ -161,6 +242,48 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#777',
     textAlign: 'center',
+  },
+  input: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 12,
+    marginBottom: 16,
+    borderRadius: 12,
+    backgroundColor: '#FFF',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  saveButton: {
+    backgroundColor: '#28a745',
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545',
+  },
+  buttonText: {
+    color: '#FFF',
+    fontSize: 16,
+  },
+  editButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#007bff',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  editButtonText: {
+    color: '#FFF',
+    fontSize: 16,
   },
   backButton: {
     marginTop: 20,
