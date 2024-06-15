@@ -68,11 +68,11 @@ const LimitHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
         date: yearMonth,
       };
 
-      const response = await fetch(`http://192.168.0.21:8080/api/limit/${limit.id}`, {
+      const response = await fetch(`http://192.168.0.21:8080/api/limit?date=${yearMonth}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb2dyYW5kbzZAZ21haWwuY29tIiwiaWF0IjoxNzE4NDc0MjU3LCJleHAiOjE3MTkwNzkwNTd9.fPl8-rbCnGdQ6QEy9Ot1oRtdHObDp3ysj3AqUqkI7jM"}`,
         },
         body: JSON.stringify(updatedLimit),
       });
