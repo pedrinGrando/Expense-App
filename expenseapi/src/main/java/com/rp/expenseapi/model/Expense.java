@@ -1,5 +1,6 @@
 package com.rp.expenseapi.model;
 
+import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,9 @@ public class Expense {
 
     @Column(nullable = false, length = 100)
     private String name;
+
+    @Column(nullable = false)
+    private BigDecimal value;
 
     @Column(unique = false, nullable = false, length = 200)
     private String description;
