@@ -81,7 +81,7 @@ const MainTab = () => (
       component={ProfileScreen} 
       options={({ navigation }) => ({ 
         tabBarLabel: '', 
-        title: 'Profile',
+        title: 'Perfil',
         headerStyle: { backgroundColor: '#E0F7FA' }, 
         headerTitleStyle: { color: '#000' },
         headerRight: () => headerIcons(navigation), 
@@ -103,7 +103,7 @@ const MainTab = () => (
       component={AddExpenseScreen} 
       options={({ navigation }) => ({ 
         tabBarLabel: '', 
-        title: 'Expense',
+        title: 'Despesa',
         headerStyle: { backgroundColor: '#E0F7FA' }, 
         headerTitleStyle: { color: '#000' },
         headerRight: () => headerIcons(navigation), 
@@ -114,7 +114,7 @@ const MainTab = () => (
       component={AddLimitScreen} 
       options={({ navigation }) => ({ 
         tabBarLabel: '', 
-        title: 'Limit',
+        title: 'Limite',
         headerStyle: { backgroundColor: '#E0F7FA' }, 
         headerTitleStyle: { color: '#000' },
         headerRight: () => headerIcons(navigation), 
