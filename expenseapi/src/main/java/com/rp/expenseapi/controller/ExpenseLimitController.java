@@ -1,8 +1,6 @@
 package com.rp.expenseapi.controller;
 
 import java.time.YearMonth;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rp.expenseapi.dto.expense.ExpenseDTO;
 import com.rp.expenseapi.dto.limit.ExpenseLimitDTO;
 import com.rp.expenseapi.service.ExpenseLimitService;
 
@@ -44,8 +41,9 @@ public class ExpenseLimitController {
     return new ResponseEntity<>(createdExpenseLimit, HttpStatus.CREATED);
   }
 
-  // @PutMapping
-  // public ResponseEntity<ExpenseLimitDTO> updateExpenseLimit (@RequestParam YearMonth date) {
-  //   return ResponseEntity.ok(new ExpenseLimitDTO());
-  // }
+  @PutMapping
+  public ResponseEntity<ExpenseLimitDTO> updateExpenseLimit (@RequestParam YearMonth date,  @RequestBody ExpenseLimitDTO expenseLimitDTO) {
+    ExpenseLimitDTO updatedExpenseLimit = expenseLimitService.updateExpenseLimit(date, expenseLimitDTO);
+    return ResponseEntity.ok(updatedExpenseLimit);
+  }
 }

@@ -1,7 +1,6 @@
 package com.rp.expenseapi.service;
 
 import java.time.YearMonth;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,15 @@ public class ExpenseLimitService {
     User currentUser = UserUtils.getCurrentUser().orElseThrow(() -> new RuntimeException("User not authenticated"));
     ExpenseLimit expenseLimit = expenseLimitRepository.findByUserAndDate(currentUser, date);
     return convertToDTO(expenseLimit);
+  }
+
+  public ExpenseLimitDTO updateExpenseLimit(YearMonth date, ExpenseLimitDTO expenseLimitDTO) {
+    User currentUser = UserUtils.getCurrentUser().orElseThrow(() -> new RuntimeException("User not authenticated"));
+    ExpenseLimit existingExpenseLimit = expenseLimitRepository.findByUserAndDate(currentUser, date);
+    existingExpenseLimit.setUser(currentUser);
+    existingExpenseLimit.setValue(expenseLimitDTO.getValue());
+    ExpenseLimit updatedExpense = expenseLimitRepository.save(existingExpenseLimit);
+    return convertToDTO(updatedExpense);
   }
 
   private ExpenseLimitDTO convertToDTO(ExpenseLimit expenseLimit) {
