@@ -1,33 +1,57 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
+import { format } from 'date-fns'; 
 
 const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [description, setDescription] = useState('');
   const [limit, setLimit] = useState('');
   const [month, setMonth] = useState('Janeiro');
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [token, setToken] = useState<string>('');
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('authenticatedUser');
+        const token = await AsyncStorage.getItem('token');
+        setToken(token || '');
+        if (userData) {
+          const parsedUserData = JSON.parse(userData);
+          setUser(parsedUserData);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+        Alert.alert('Erro', 'Não foi possível carregar os dados do usuário.');
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   const saveLimit = async () => {
     try {
-      if (!description || !limit || !month) {
+      if (!limit || !month) {
         Alert.alert('Erro', 'Por favor, preencha todos os campos.');
         return;
       }
 
       setLoading(true);
 
+      const yearMonth = format(new Date(), 'yyyy') + '-' + formatMonth(month);
+
       const limitData = {
-        description,
-        limit: parseFloat(limit),
-        month,
+        value: parseFloat(limit), 
+        date: yearMonth, 
+        userId: user?.id, 
       };
 
       const response = await fetch('http://192.168.0.21:8080/api/limits/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(limitData),
       });
@@ -50,6 +74,24 @@ const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
+  const formatMonth = (monthName: string): string => {
+    const months: { [key: string]: string } = {
+      'Janeiro': '01',
+      'Fevereiro': '02',
+      'Março': '03',
+      'Abril': '04',
+      'Maio': '05',
+      'Junho': '06',
+      'Julho': '07',
+      'Agosto': '08',
+      'Setembro': '09',
+      'Outubro': '10',
+      'Novembro': '11',
+      'Dezembro': '12',
+    };
+    return months[monthName] || '01'; 
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -66,18 +108,19 @@ const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           style={styles.picker}
           onValueChange={(itemValue: string) => setMonth(itemValue)}
         >
-          <Picker.Item label="Janeiro" value="January" />
-          <Picker.Item label="Fevereiro" value="February" />
-          <Picker.Item label="Março" value="March" />
-          <Picker.Item label="Abril" value="April" />
-          <Picker.Item label="Maio" value="May" />
-          <Picker.Item label="Junho" value="June" />
-          <Picker.Item label="Julho" value="July" />
-          <Picker.Item label="Agosto" value="August" />
-          <Picker.Item label="Setembro" value="September" />
-          <Picker.Item label="Outubro" value="October" />
-          <Picker.Item label="Novembro" value="November" />
-          <Picker.Item label="Dezembro" value="December" />
+          <Picker.Item style={styles.title} label="Mês para a despesa" value={null} />
+          <Picker.Item label="Janeiro" value="Janeiro" />
+          <Picker.Item label="Fevereiro" value="Fevereiro" />
+          <Picker.Item label="Março" value="Março" />
+          <Picker.Item label="Abril" value="Abril" />
+          <Picker.Item label="Maio" value="Maio" />
+          <Picker.Item label="Junho" value="Junho" />
+          <Picker.Item label="Julho" value="Julho" />
+          <Picker.Item label="Agosto" value="Agosto" />
+          <Picker.Item label="Setembro" value="Setembro" />
+          <Picker.Item label="Outubro" value="Outubro" />
+          <Picker.Item label="Novembro" value="Novembro" />
+          <Picker.Item label="Dezembro" value="Dezembro" />
         </Picker>
         <TouchableOpacity style={styles.buttonContainer} onPress={saveLimit} disabled={loading}>
           <Text style={styles.buttonText}>
@@ -110,12 +153,12 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     borderRadius: 12,
-    backgroundColor: '#FFF', 
+    backgroundColor: '#FFF',
   },
   picker: {
-    width: '100%', 
+    width: '100%',
     marginBottom: 16,
-    backgroundColor: '#6366F1', 
+    backgroundColor: '#6366F1',
     borderRadius: 15,
   },
   buttonContainer: {

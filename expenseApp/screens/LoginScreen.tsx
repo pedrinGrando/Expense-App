@@ -18,10 +18,10 @@ const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         },
         body: JSON.stringify({ email, password }), 
       });
-
+  
       const textResponse = await response.text();
       console.log('Raw response:', textResponse);
-
+  
       let data;
       try {
         data = JSON.parse(textResponse); 
@@ -30,11 +30,11 @@ const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         console.error('JSON parsing error:', parseError);
         data = { message: textResponse }; 
       }
-
+  
       if (response.ok) {
         console.log('Login bem-sucedido:', data);
         await AsyncStorage.setItem('authenticatedUser', JSON.stringify(data.authenticatedUser));
-        await AsyncStorage.setItem('jwtToken', JSON.stringify(data));
+        await AsyncStorage.setItem('token', data.token); 
         Alert.alert('Login bem-sucedido', `Bem-vindo`);
         navigation.reset({
           index: 0,
@@ -51,6 +51,7 @@ const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       setLoading(false); 
     }
   };
+  
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

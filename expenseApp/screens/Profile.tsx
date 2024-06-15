@@ -64,7 +64,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Perfil</Text>
+      <Text style={styles.title}>Seus dados</Text>
       <View style={styles.infoContainer}>
         <Text style={styles.label}>Npme:</Text>
         <Text style={styles.value}>{user.name}</Text>

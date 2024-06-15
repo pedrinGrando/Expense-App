@@ -4,13 +4,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { TouchableOpacity, View } from 'react-native';
 
+// Importações das telas
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
 import ProfileScreen from './screens/Profile';
 import AddExpenseScreen from './screens/AddExpenseScreen';
 import AddLimitScreen from './screens/AddLimitScreen';
+import ExpenseHistory from './screens/ExpenseHistory';
+import HistoricoLimitsScreen from './screens/LimitHistory';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,7 +35,17 @@ const AuthStack = () => (
   </Stack.Navigator>
 );
 
-// Tab Principal
+const headerIcons = (navigation: any) => (
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <TouchableOpacity onPress={() => navigation.navigate('HistoricoExpense')}>
+      <Icon name="document-text-outline" size={25} color="#000" style={{ marginRight: 15 }} />
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => navigation.navigate('HistoricoLimits')}>
+      <Icon name="document-attach-outline" size={25} color="#000" />
+    </TouchableOpacity>
+  </View>
+);
+
 const MainTab = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
@@ -65,42 +79,46 @@ const MainTab = () => (
     <Tab.Screen 
       name="Profile" 
       component={ProfileScreen} 
-      options={{ 
+      options={({ navigation }) => ({ 
         tabBarLabel: '', 
         title: 'Profile',
         headerStyle: { backgroundColor: '#E0F7FA' }, 
-        headerTitleStyle: { color: '#000' }
-      }} 
+        headerTitleStyle: { color: '#000' },
+        headerRight: () => headerIcons(navigation), 
+      })} 
     />
     <Tab.Screen 
       name="Home" 
       component={HomeScreen} 
-      options={{ 
+      options={({ navigation }) => ({ 
         tabBarLabel: '', 
         title: 'Home',
         headerStyle: { backgroundColor: '#E0F7FA' }, 
-        headerTitleStyle: { color: '#000' } 
-      }} 
+        headerTitleStyle: { color: '#000' },
+        headerRight: () => headerIcons(navigation), 
+      })} 
     />
     <Tab.Screen 
       name="Expense" 
       component={AddExpenseScreen} 
-      options={{ 
+      options={({ navigation }) => ({ 
         tabBarLabel: '', 
         title: 'Expense',
         headerStyle: { backgroundColor: '#E0F7FA' }, 
-        headerTitleStyle: { color: '#000' } 
-      }} 
+        headerTitleStyle: { color: '#000' },
+        headerRight: () => headerIcons(navigation), 
+      })} 
     />
     <Tab.Screen 
       name="Limit" 
       component={AddLimitScreen} 
-      options={{ 
+      options={({ navigation }) => ({ 
         tabBarLabel: '', 
         title: 'Limit',
         headerStyle: { backgroundColor: '#E0F7FA' }, 
-        headerTitleStyle: { color: '#000' } 
-      }} 
+        headerTitleStyle: { color: '#000' },
+        headerRight: () => headerIcons(navigation), 
+      })} 
     />
   </Tab.Navigator>
 );
@@ -111,6 +129,34 @@ const App: React.FC = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Auth" component={AuthStack} />
         <Stack.Screen name="Main" component={MainTab} />
+        <Stack.Screen 
+          name="HistoricoExpense" 
+          component={ExpenseHistory} 
+          options={({ navigation }) => ({
+            title: 'Histórico de Despesas',
+            headerStyle: { backgroundColor: '#E0F7FA' },
+            headerTitleStyle: { color: '#000' },
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+                <Icon name="arrow-back-outline" size={25} color="#000" />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+        <Stack.Screen 
+          name="HistoricoLimits" 
+          component={HistoricoLimitsScreen} 
+          options={({ navigation }) => ({
+            title: 'Histórico de Limites',
+            headerStyle: { backgroundColor: '#E0F7FA' },
+            headerTitleStyle: { color: '#000' },
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 15 }}>
+                <Icon name="arrow-back-outline" size={25} color="#000" />
+              </TouchableOpacity>
+            ),
+          })}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

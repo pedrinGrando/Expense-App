@@ -1,41 +1,72 @@
 import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
+import { format } from 'date-fns'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddExpenseScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [description, setDescription] = useState('');
+  const [name, setName] = useState('');
+  const [user, setUser] = useState<any>(null);
+  const [token, setToken] = useState<string>(''); 
   const [amount, setAmount] = useState('');
-  const [month, setMonth] = useState('Janeiro'); 
+  const [month, setMonth] = useState('Janeiro');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('authenticatedUser');
+        const jwtToken = await AsyncStorage.getItem('token');
+        if (jwtToken) setToken(jwtToken.trim());
+        if (userData) {
+          const parsedUserData = JSON.parse(userData);
+          setUser(parsedUserData);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+        Alert.alert('Erro', 'Não foi possível carregar os dados do usuário.');
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   const saveExpense = async () => {
     try {
-      if (!description || !amount || !month) {
-        Alert.alert('Error', 'Please, fill all fields.');
+      if (!name || !description || !amount || !month) {
+        Alert.alert('Erro', 'Por favor, preencha todos os campos.');
         return;
       }
 
       setLoading(true);
+      const yearMonth = format(new Date(), 'yyyy') + '-' + formatMonth(month);
 
       const expense = {
+        name,
         description,
-        amount: parseFloat(amount),
-        month,
+        value: parseFloat(amount), 
+        date: yearMonth, 
       };
 
-      const response = await fetch('http://192.168.0.21:8080/api/expenses/add', {
+      const response = await fetch('http://192.168.0.21:8080/api/expense', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb2dyYW5kbzZAZ21haWwuY29tIiwiaWF0IjoxNzE4NDc0MjU3LCJleHAiOjE3MTkwNzkwNTd9.fPl8-rbCnGdQ6QEy9Ot1oRtdHObDp3ysj3AqUqkI7jM"}`, 
         },
-        body: JSON.stringify(expense), 
+        body: JSON.stringify(expense),
       });
 
       if (response.ok) {
         const responseData = await response.json();
+        setAmount('');
+        setName('');
+        setDescription('');
+        setMonth('Janeiro');
         console.log('Despesa adicionada:', responseData);
         Alert.alert('Sucesso', 'Despesa adicionada com sucesso!');
-        navigation.goBack(); 
+        navigation.goBack();
       } else {
         const errorData = await response.json();
         console.error('Erro ao adicionar despesa:', errorData);
@@ -49,10 +80,34 @@ const AddExpenseScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
+  const formatMonth = (monthName: string): string => {
+    const months: { [key: string]: string } = {
+      'Janeiro': '01',
+      'Fevereiro': '02',
+      'Março': '03',
+      'Abril': '04',
+      'Maio': '05',
+      'Junho': '06',
+      'Julho': '07',
+      'Agosto': '08',
+      'Setembro': '09',
+      'Outubro': '10',
+      'Novembro': '11',
+      'Dezembro': '12',
+    };
+    return months[monthName] || '01'; 
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <Text style={styles.title}>Adicionar Despesa</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome"
+          value={name}
+          onChangeText={setName}
+        />
         <TextInput
           style={styles.input}
           placeholder="Descrição"
@@ -70,19 +125,21 @@ const AddExpenseScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           selectedValue={month}
           style={styles.picker}
           onValueChange={(itemValue: string) => setMonth(itemValue)}
+          placeholder='Mês para a despesa'
         >
-          <Picker.Item label="Janeiro" value="January" />
-          <Picker.Item label="Fevereiro" value="February" />
-          <Picker.Item label="Março" value="March" />
-          <Picker.Item label="Abril" value="April" />
-          <Picker.Item label="Maio" value="May" />
-          <Picker.Item label="Junho" value="June" />
-          <Picker.Item label="Julho" value="July" />
-          <Picker.Item label="Agosto" value="August" />
-          <Picker.Item label="Setembro" value="September" />
-          <Picker.Item label="Outubro" value="October" />
-          <Picker.Item label="Novembro" value="November" />
-          <Picker.Item label="Dezembro" value="December" />
+          <Picker.Item style={styles.title} label="Mês para a despesa" value={null} />
+          <Picker.Item label="Janeiro" value="Janeiro" />
+          <Picker.Item label="Fevereiro" value="Fevereiro" />
+          <Picker.Item label="Março" value="Março" />
+          <Picker.Item label="Abril" value="Abril" />
+          <Picker.Item label="Maio" value="Maio" />
+          <Picker.Item label="Junho" value="Junho" />
+          <Picker.Item label="Julho" value="Julho" />
+          <Picker.Item label="Agosto" value="Agosto" />
+          <Picker.Item label="Setembro" value="Setembro" />
+          <Picker.Item label="Outubro" value="Outubro" />
+          <Picker.Item label="Novembro" value="Novembro" />
+          <Picker.Item label="Dezembro" value="Dezembro" />
         </Picker>
         <TouchableOpacity style={styles.buttonContainer} onPress={saveExpense} disabled={loading}>
           <Text style={styles.buttonText}>
@@ -115,16 +172,16 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     borderRadius: 12,
-    backgroundColor: '#FFF', 
+    backgroundColor: '#FFF',
   },
   picker: {
-    width: '100%', 
+    width: '100%',
     marginBottom: 16,
     backgroundColor: '#6366F1',
-    borderRadius: 15 
+    borderRadius: 15,
   },
   buttonContainer: {
-    backgroundColor: '#6366F1', 
+    backgroundColor: '#6366F1',
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 12,

@@ -8,10 +8,13 @@ const HomeScreen: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [selectedMonth, setSelectedMonth] = useState<string>('January');
 
+  const [token, setToken] = useState<any>('');
   useEffect(() => {
     const loadUserData = async () => {
       try {
         const userData = await AsyncStorage.getItem('authenticatedUser');
+        const token = await AsyncStorage.getItem('token');
+        setToken(token);
         if (userData) {
           const parsedUserData = JSON.parse(userData);
           setUser(parsedUserData);
@@ -43,9 +46,9 @@ const HomeScreen: React.FC = () => {
   const renderScenario = () => {
     switch (scenario) {
       case 'saved':
-        return <Text style={styles.scenarioText}>Parabés, Você economizou! </Text>;
+        return <Text style={styles.scenarioText}>Parabés🎉, Você economizou! </Text>;
       case 'notSaved':
-        return <Text style={styles.scenarioText}>Uma pena, não economizou.</Text>;
+        return <Text style={styles.scenarioText}>Uma pena👎, não economizou.</Text>;
       case 'noExpenses':
       default:
         return <Text style={styles.scenarioText}>Você não possui despesas registradas ainda.</Text>;
@@ -55,13 +58,14 @@ const HomeScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.greetingText}>
-        Olá, {user ? user.name : 'Usuário'}!
+        Olá, {user ? user.name : 'Usuário'}👋
       </Text>
       <Picker
         selectedValue={selectedMonth}
         style={styles.picker}
         onValueChange={(itemValue: string) => setSelectedMonth(itemValue)}
       >
+        <Picker.Item label="Consulte o mês" value={null} />
         <Picker.Item label="Janeiro/2024" value="January" />
         <Picker.Item label="Fevereiro/2024" value="February" />
         <Picker.Item label="Março/2024" value="March" />
