@@ -20,5 +20,4 @@ public class ExpenseDTO {
   private BigDecimal value;
   private String description;
   private YearMonth date;
-  private User user;
 }
