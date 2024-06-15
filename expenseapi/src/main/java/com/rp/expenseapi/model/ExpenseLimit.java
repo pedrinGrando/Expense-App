@@ -27,7 +27,7 @@ public class ExpenseLimit {
     @Column(nullable = false)
     private BigDecimal value ;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private YearMonth date;
 
     @ManyToOne
