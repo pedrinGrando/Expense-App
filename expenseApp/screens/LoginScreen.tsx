@@ -11,7 +11,7 @@ const LoginScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const login = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://10.10.101.180:8080/api/auth/login', {
+      const response = await fetch('http://192.168.0.21:8080/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

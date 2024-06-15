@@ -16,7 +16,7 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       setLoading(true);
 
       const formattedDateOfBirth = dateOfBirth ? dateOfBirth.toISOString().split('T')[0] : '';
-      const response = await fetch('http://10.10.101.180:8080/api/auth/signup', {
+      const response = await fetch('http://192.168.0.21:8080/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

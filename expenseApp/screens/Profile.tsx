@@ -64,22 +64,22 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
+      <Text style={styles.title}>Perfil</Text>
       <View style={styles.infoContainer}>
-        <Text style={styles.label}>Name:</Text>
+        <Text style={styles.label}>Npme:</Text>
         <Text style={styles.value}>{user.name}</Text>
       </View>
       <View style={styles.infoContainer}>
-        <Text style={styles.label}>Email:</Text>
+        <Text style={styles.label}>E-mail:</Text>
         <Text style={styles.value}>{user.email}</Text>
       </View>
       <View style={styles.infoContainer}>
-        <Text style={styles.label}>Date of Birth:</Text>
+        <Text style={styles.label}>Data de nascimento:</Text>
         <Text style={styles.value}>{formatDate(user.birthDate)}</Text>
       </View>
       <TouchableOpacity style={styles.buttonContainer} onPress={logout} disabled={loading}>
           <Text style={styles.linkText}>
-            {loading ? 'Loading...' : 'Logout'}
+            {loading ? 'Loading...' : 'Sair'}
           </Text>
         </TouchableOpacity>
     </View>
