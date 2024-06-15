@@ -3,8 +3,6 @@ package com.rp.expenseapi.dto.expense;
 import java.math.BigDecimal;
 import java.time.YearMonth;
 
-import com.rp.expenseapi.model.User;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,7 +1,5 @@
 package com.rp.expenseapi.dto.auth;
 
-import java.time.LocalDate;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
