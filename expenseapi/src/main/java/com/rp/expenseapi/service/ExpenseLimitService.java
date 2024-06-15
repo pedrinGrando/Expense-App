@@ -17,17 +17,17 @@ public class ExpenseLimitService {
   @Autowired
   private ExpenseLimitRepository expenseLimitRepository;
 
+  public ExpenseLimitDTO getExpenseLimit(YearMonth date) {
+    User currentUser = UserUtils.getCurrentUser().orElseThrow(() -> new RuntimeException("User not authenticated"));
+    ExpenseLimit expenseLimit = expenseLimitRepository.findByUserAndDate(currentUser, date);
+    return convertToDTO(expenseLimit);
+  }
+
   public ExpenseLimitDTO createExpenseLimit (ExpenseLimitDTO expenseLimitDTO) {
     ExpenseLimit newExpenseLimit = convertToEntity(expenseLimitDTO);
     newExpenseLimit.setUser(UserUtils.getCurrentUser().orElseThrow(() -> new RuntimeException("User not authenticated")));
     ExpenseLimit createdExpenseLimit = expenseLimitRepository.save(newExpenseLimit);
     return convertToDTO(createdExpenseLimit);
-  }
-
-  public ExpenseLimitDTO getExpenseLimit(YearMonth date) {
-    User currentUser = UserUtils.getCurrentUser().orElseThrow(() -> new RuntimeException("User not authenticated"));
-    ExpenseLimit expenseLimit = expenseLimitRepository.findByUserAndDate(currentUser, date);
-    return convertToDTO(expenseLimit);
   }
 
   public ExpenseLimitDTO updateExpenseLimit(YearMonth date, ExpenseLimitDTO expenseLimitDTO) {

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rp.expenseapi.dto.limit.ExpenseLimitDTO;
+import com.rp.expenseapi.dto.limit.MonthResultDTO;
 import com.rp.expenseapi.service.ExpenseLimitService;
+import com.rp.expenseapi.service.MonthResultService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @RequestMapping("/api/limit")
 public class ExpenseLimitController {
+
+  @Autowired 
+  private MonthResultService monthResultService;
 
   @Autowired
   private ExpenseLimitService expenseLimitService;
@@ -31,9 +36,11 @@ public class ExpenseLimitController {
       return ResponseEntity.ok(expenseLimit);
   }
 
-  // @GetMapping("/month-result")
-  // public void getMonthResult(@RequestParam Optional<YearMonth> date) {
-  // }
+  @GetMapping("/month-result")
+  public ResponseEntity<MonthResultDTO> getMonthResult(@RequestParam YearMonth date) {
+    MonthResultDTO monthResult = monthResultService.getMonthResult(date);
+    return ResponseEntity.ok(monthResult);
+  }
 
   @PostMapping
   public ResponseEntity<ExpenseLimitDTO> createExpenseLimit (@RequestBody ExpenseLimitDTO expenseLimitDTO) {
