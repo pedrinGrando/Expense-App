@@ -166,12 +166,13 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   scenarioText: {
+    width: 350,
     fontSize: 20,
-    padding: 10,
-    backgroundColor: '#007AFF',
+    padding: 15,
+    backgroundColor: '#6366F1',
     textAlign: 'center',
     marginBottom: 10,
-    borderRadius: 8,
+    borderRadius: 30,
     color: '#FFF',
   },
   progressBarContainer: {

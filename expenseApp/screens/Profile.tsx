@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format } from 'date-fns'; 
 
@@ -56,32 +56,32 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   if (!user) {
     return (
-      <View style={styles.container}>
-        <Text>Carregando dados do usuário...</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Carregando dados do usuário...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Seus dados</Text>
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Npme:</Text>
-        <Text style={styles.value}>{user.name}</Text>
+      <Text style={styles.title}>Seus Dados</Text>
+      <View style={styles.profileContainer}>
+        <View style={styles.infoBlock}>
+          <Text style={styles.label}>Nome:</Text>
+          <Text style={styles.value}>{user.name}</Text>
+        </View>
+        <View style={styles.infoBlock}>
+          <Text style={styles.label}>E-mail:</Text>
+          <Text style={styles.value}>{user.email}</Text>
+        </View>
+        <View style={styles.infoBlock}>
+          <Text style={styles.label}>Data de Nascimento:</Text>
+          <Text style={styles.value}>{formatDate(user.birthDate)}</Text>
+        </View>
       </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>E-mail:</Text>
-        <Text style={styles.value}>{user.email}</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Data de nascimento:</Text>
-        <Text style={styles.value}>{formatDate(user.birthDate)}</Text>
-      </View>
-      <TouchableOpacity style={styles.buttonContainer} onPress={logout} disabled={loading}>
-          <Text style={styles.linkText}>
-            {loading ? 'Loading...' : 'Sair'}
-          </Text>
-        </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={logout} disabled={loading}>
+        <Text style={styles.buttonText}>{loading ? 'Loading...' : 'Sair'}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -94,36 +94,59 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#E0F7FA',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#E0F7FA',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#6366F1',
+  },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
+    marginBottom: 24,
+    color: '#333',
+  },
+  profileContainer: {
+    width: '100%',
+    padding: 16,
+    borderRadius: 10,
+    backgroundColor: '#FFF',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  infoBlock: {
     marginBottom: 16,
   },
-  infoContainer: {
-    flexDirection: 'row',
-    marginBottom: 8,
-    width: '100%',
-    justifyContent: 'space-between',
-  },
   label: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
   },
   value: {
-    fontSize: 16,
+    fontSize: 18,
+    color: '#777',
   },
-  buttonContainer: {
-    marginTop: 16,
+  button: {
     width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: 'red', 
-    padding: 7,
-    borderRadius: 15, 
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    backgroundColor: '#FF6347',
+    borderRadius: 10,
+    alignItems: 'center',
   },
-  linkText: {
+  buttonText: {
     color: '#FFF',
     fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
