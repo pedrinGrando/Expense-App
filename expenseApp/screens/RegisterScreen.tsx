@@ -67,6 +67,11 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
+  const formatDate = (date: Date | undefined): string => {
+    if (!date) return 'Data de Nascimento';
+    return date.toLocaleDateString('pt-BR');
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -92,16 +97,17 @@ const RegisterScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           secureTextEntry
           onChangeText={setPassword}
         />
-        <Text>
-          Sua Data de Nascimento
-        </Text>
-        <DateTimePicker
-          value={dateOfBirth || new Date()}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-
+        <TouchableOpacity style={styles.datePicker} onPress={() => setShowDatePicker(true)}>
+          <Text style={styles.datePickerText}>{formatDate(dateOfBirth)}</Text>
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={dateOfBirth || new Date()}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+          />
+        )}
         {loading ? (
           <ActivityIndicator size="large" color="#6366F1" />
         ) : (
@@ -146,6 +152,21 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     borderRadius: 12,
+    backgroundColor: '#FFF',
+  },
+  datePicker: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 12,
+    marginBottom: 16,
+    borderRadius: 12,
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: '#000',
   },
   registerButton: {
     backgroundColor: '#6366F1', // Indigo 500
@@ -174,7 +195,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     bottom: 0,
     width: '100%',
-    height: 330,
+    height: 200,
   },
 });
 

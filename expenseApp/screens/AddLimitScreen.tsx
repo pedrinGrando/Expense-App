@@ -43,11 +43,10 @@ const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       const limitData = {
         value: parseFloat(limit), 
-        date: yearMonth, 
-        userId: user?.id, 
+        date: yearMonth
       };
 
-      const response = await fetch('http://192.168.0.21:8080/api/limits/add', {
+      const response = await fetch('http://192.168.0.21:8080/api/limit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,6 +57,8 @@ const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
       if (response.ok) {
         const responseData = await response.json();
+        setLimit('');
+        setMonth('');
         console.log('Limite adicionado:', responseData);
         Alert.alert('Sucesso', 'Limite de gasto adicionado com sucesso!');
         navigation.goBack();
@@ -108,7 +109,7 @@ const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           style={styles.picker}
           onValueChange={(itemValue: string) => setMonth(itemValue)}
         >
-          <Picker.Item style={styles.title} label="Mês para a despesa" value={null} />
+          <Picker.Item style={styles.title} label="Mês para o limite" value={null} />
           <Picker.Item label="Janeiro" value="Janeiro" />
           <Picker.Item label="Fevereiro" value="Fevereiro" />
           <Picker.Item label="Março" value="Março" />

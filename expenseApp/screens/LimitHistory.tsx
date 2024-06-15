@@ -51,8 +51,7 @@ const LimitHistory: React.FC<{ navigation: any }> = ({ navigation }) => {
         Alert.alert('Erro', errorData.message || 'Não foi possível buscar o limite. Tente novamente.');
       }
     } catch (error) {
-      console.error('Erro ao fazer a requisição:', error);
-      Alert.alert('Erro', 'Não foi possível buscar o limite. Verifique sua conexão com a internet e tente novamente.');
+        setLoading(false);
     } finally {
       setLoading(false);
     }
