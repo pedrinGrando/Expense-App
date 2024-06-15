@@ -51,7 +51,7 @@ const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb2dyYW5kbzZAZ21haWwuY29tIiwiaWF0IjoxNzE4NDc0MjU3LCJleHAiOjE3MTkwNzkwNTd9.fPl8-rbCnGdQ6QEy9Ot1oRtdHObDp3ysj3AqUqkI7jM"}`,
         },
         body: JSON.stringify(limitData),
       });
@@ -98,7 +98,7 @@ const AddLimitScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Text style={styles.title}>Adicionar Limite de Gasto Mensal</Text>
         <TextInput
           style={styles.input}
-          placeholder="Valor do Limite"
+          placeholder="Valor R$ 0,00"
           value={limit}
           onChangeText={setLimit}
           keyboardType="numeric"

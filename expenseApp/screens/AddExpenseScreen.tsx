@@ -116,7 +116,7 @@ const AddExpenseScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         />
         <TextInput
           style={styles.input}
-          placeholder="Valor"
+          placeholder="Valor R$ 0,00"
           value={amount}
           onChangeText={setAmount}
           keyboardType="numeric"

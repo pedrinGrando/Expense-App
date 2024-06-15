@@ -1,20 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; 
+import { Picker } from '@react-native-picker/picker';
 
 const HomeScreen: React.FC = () => {
-  const [scenario, setScenario] = React.useState<'saved' | 'notSaved' | 'noExpenses'>('noExpenses');
+  const [scenario, setScenario] = useState<'saved' | 'notSaved' | 'noExpenses'>('noExpenses');
   const [user, setUser] = useState<any>(null);
-  const [selectedMonth, setSelectedMonth] = useState<string>('January');
+  const [selectedMonth, setSelectedMonth] = useState<string>('Janeiro');
+  const [totalExpenses, setTotalExpenses] = useState<number>(0);
+  const [monthLimit, setMonthLimit] = useState<number>(0);
+  const [token, setToken] = useState<string>('');
 
-  const [token, setToken] = useState<any>('');
   useEffect(() => {
     const loadUserData = async () => {
       try {
         const userData = await AsyncStorage.getItem('authenticatedUser');
-        const token = await AsyncStorage.getItem('token');
-        setToken(token);
+        const jwtToken = await AsyncStorage.getItem('token');
+        if (jwtToken) setToken(jwtToken.trim());
         if (userData) {
           const parsedUserData = JSON.parse(userData);
           setUser(parsedUserData);
@@ -28,31 +30,90 @@ const HomeScreen: React.FC = () => {
     loadUserData();
   }, []);
 
-  //Logica ver se economizou
   useEffect(() => {
     const checkSavings = async () => {
-      const savingsMonths = ['January', 'March', 'June'];
+      if (!token) {
+        Alert.alert('Erro', 'Token não encontrado. Por favor, faça login novamente.');
+        return;
+      }
 
-      if (savingsMonths.includes(selectedMonth)) {
-        setScenario('saved');
-      } else {
-        setScenario('notSaved');
+      const yearMonth = new Date().getFullYear() + '-' + formatMonth(selectedMonth);
+      try {
+        const response = await fetch(`http://192.168.0.21:8080/api/savings/check?date=${yearMonth}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRyb2dyYW5kbzZAZ21haWwuY29tIiwiaWF0IjoxNzE4NDc0MjU3LCJleHAiOjE3MTkwNzkwNTd9.fPl8-rbCnGdQ6QEy9Ot1oRtdHObDp3ysj3AqUqkI7jM"}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setTotalExpenses(data.totalExpenses || 0);
+          setMonthLimit(data.monthLimit || 0);
+          if (data.result) {
+            setScenario('saved');
+          } else {
+            setScenario('notSaved');
+          }
+        } else {
+          const errorData = await response.json();
+          console.error('Erro ao verificar economia:', errorData);
+          Alert.alert('Erro', errorData.message || 'Não foi possível verificar a economia. Tente novamente.');
+        }
+      } catch (error) {
+        console.error('Erro ao fazer a requisição:', error);
+        Alert.alert('Erro', 'Não foi possível verificar a economia. Verifique sua conexão com a internet e tente novamente.');
       }
     };
 
     checkSavings();
-  }, [selectedMonth]);
+  }, [selectedMonth, token]);
+
+  const formatMonth = (monthName: string): string => {
+    const months: { [key: string]: string } = {
+      'Janeiro': '01',
+      'Fevereiro': '02',
+      'Março': '03',
+      'Abril': '04',
+      'Maio': '05',
+      'Junho': '06',
+      'Julho': '07',
+      'Agosto': '08',
+      'Setembro': '09',
+      'Outubro': '10',
+      'Novembro': '11',
+      'Dezembro': '12',
+    };
+    return months[monthName] || '01';
+  };
 
   const renderScenario = () => {
     switch (scenario) {
       case 'saved':
-        return <Text style={styles.scenarioText}>Parabés🎉, Você economizou! </Text>;
+        return <Text style={styles.scenarioText}>Parabéns🎉, Você economizou!</Text>;
       case 'notSaved':
         return <Text style={styles.scenarioText}>Uma pena👎, não economizou.</Text>;
       case 'noExpenses':
       default:
         return <Text style={styles.scenarioText}>Você não possui despesas registradas ainda.</Text>;
     }
+  };
+
+  const renderProgressBar = () => {
+    if (monthLimit > 0) {
+      const progress = Math.min(totalExpenses / monthLimit, 1); 
+      return (
+        <View style={styles.progressBarContainer}>
+          <Text style={styles.progressText}>Despesas: R$ {totalExpenses.toFixed(2)} / Limite: R$ {monthLimit.toFixed(2)}</Text>
+          <View style={styles.progressBar}>
+            <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+          </View>
+          <Text style={styles.progressPercentage}>{(progress * 100).toFixed(2)}%</Text>
+        </View>
+      );
+    }
+    return null;
   };
 
   return (
@@ -66,20 +127,21 @@ const HomeScreen: React.FC = () => {
         onValueChange={(itemValue: string) => setSelectedMonth(itemValue)}
       >
         <Picker.Item label="Consulte o mês" value={null} />
-        <Picker.Item label="Janeiro/2024" value="January" />
-        <Picker.Item label="Fevereiro/2024" value="February" />
-        <Picker.Item label="Março/2024" value="March" />
-        <Picker.Item label="Abril/2024" value="April" />
-        <Picker.Item label="Maio/2024" value="May" />
-        <Picker.Item label="Junho/2024" value="June" />
-        <Picker.Item label="Julho/2024" value="July" />
-        <Picker.Item label="Agosto/2024" value="August" />
-        <Picker.Item label="Setembro/2024" value="September" />
-        <Picker.Item label="Outubro/2024" value="October" />
-        <Picker.Item label="Novembro/2024" value="November" />
-        <Picker.Item label="Dezembro/2024" value="December" />
+        <Picker.Item label="Janeiro/2024" value="Janeiro" />
+        <Picker.Item label="Fevereiro/2024" value="Fevereiro" />
+        <Picker.Item label="Março/2024" value="Março" />
+        <Picker.Item label="Abril/2024" value="Abril" />
+        <Picker.Item label="Maio/2024" value="Maio" />
+        <Picker.Item label="Junho/2024" value="Junho" />
+        <Picker.Item label="Julho/2024" value="Julho" />
+        <Picker.Item label="Agosto/2024" value="Agosto" />
+        <Picker.Item label="Setembro/2024" value="Setembro" />
+        <Picker.Item label="Outubro/2024" value="Outubro" />
+        <Picker.Item label="Novembro/2024" value="Novembro" />
+        <Picker.Item label="Dezembro/2024" value="Dezembro" />
       </Picker>
       {renderScenario()}
+      {renderProgressBar()}
     </View>
   );
 };
@@ -90,7 +152,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#E0F7FA', // Azul muito claro
+    backgroundColor: '#E0F7FA',
   },
   greetingText: {
     fontSize: 24,
@@ -98,9 +160,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   picker: {
-    height: 50,
-    width: '80%',
-    marginBottom: 50,
+    width: '100%',
+    marginBottom: 16,
+    backgroundColor: '#6366F1',
+    borderRadius: 15,
   },
   scenarioText: {
     fontSize: 20,
@@ -108,12 +171,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     textAlign: 'center',
     marginBottom: 10,
-    marginTop: 200,
+    borderRadius: 8,
+    color: '#FFF',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  progressBarContainer: {
+    width: '80%',
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  progressText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  progressBar: {
+    height: 20,
     width: '100%',
+    borderRadius: 10,
+    backgroundColor: '#E0E0E0',
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#007AFF',
+  },
+  progressPercentage: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#000',
   },
 });
 
